@@ -15,4 +15,4 @@ This project will develop an information system for analyzing machine learning w
 | ----------------- | -------------- |
 | Douglas MacGregor | V01008370      |
 | Mohammad Awwad    | V01026961      |
-| Jarren Morris     | ???            |
+| Jarren Morris     | V01043998      |

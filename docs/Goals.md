@@ -116,3 +116,18 @@ Review the database design and implementation based on testing and project needs
 - Issues or areas for improvement are identified.
 - Appropriate improvements are implemented where feasible.
 - Changes remain consistent with the project requirements.
+
+## Goal 10: Apply Additional Database Design Concepts
+
+### Objective
+
+Continue applying new database design concepts introduced in future lectures to further review and refine the ERD and database design where appropriate. For example, concepts such as inheritance, generalisation, subsets, or weak entity sets could be explored if they fit the project requirements.
+
+### Acceptance Criteria
+
+- New database design concepts taught in future lectures are reviewed for relevance to the project.
+- Potential improvements to the ERD or relational schema are identified.
+- Concepts such as inheritance or generalisation are explored where appropriate.
+- Relevant changes are implemented where they improve the database design.
+- Any changes remain consistent with the project requirements and existing database structure.
+- Major design changes and the reasoning behind them are documented.

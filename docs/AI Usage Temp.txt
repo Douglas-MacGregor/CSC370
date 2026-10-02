@@ -1,0 +1,19 @@
+AI Usage Summary
+
+For this project, a **ChatGPT (GPT-5.6 Sol)** model was used for as a review and verification tool rather than to design the database 
+for us. We first created the ERD ourselves and used the SQL syntax and concepts taught in class to derive the tables, primary 
+keys, foreign keys, and many-to-many relationship tables. After that, AI was used to check the SQL and help convert some of the 
+in-class syntax into the format MySQL actually expects. For example, the logical placement of foreign keys and composite primary 
+keys did not change, only the syntax used to declare them. This did not replace our understanding of the course material since 
+we still had to determine the relationships, multiplicities, keys, and table structure ourselves from the ERD.
+
+AI was also used to help review the Kaggle Alibaba GPU dataset and determine whether it contained enough useful information 
+for our project. Since the dataset is fairly large and contains several different tables and fields, AI helped us go through 
+the documentation and identify the parts that may be useful, such as machine information, GPU type, resource capacity, 
+utilization, and timing data. We still had to review the dataset ourselves, decide which parts actually matched our project 
+requirements, and identify any missing information that would need to be added or simulated. AI was mainly used as an aid to
+speed up the review process and help us navigate the dataset more efficiently, not to make the project decisions for us.
+
+Overall, AI was used for syntax verification, dataset review, and checking our work. The conceptual database design, ERD 
+structure, normalization decisions, relationships, and SQL table design were still based on the course material and our 
+own analysis.

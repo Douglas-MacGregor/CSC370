@@ -1,0 +1,63 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\title{BCNF Analysis}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{BCNF Check}
+
+Consider the relations in the ERD diagram for GPU Inference Routing.
+
+\textbf{Region}
+\[
+region\_id \to \{region\_name, country\}
+\]
+
+\textbf{InferenceRequest}
+\[
+request\_id \to \{submitted\_at, input\_size, status, region\_id, machine\_id, model\_id, response\_time\_ms\}
+\]
+
+\textbf{AIModel}
+\[
+model\_id \to \{model\_name\}
+\]
+
+\textbf{Hosts}
+\[
+(machine\_id, model\_id) \rightarrow \varnothing
+\]
+
+\textbf{GPUServer}
+\[
+machine\_id \to \{cpu\_capacity, memory\_capacity, gpu\_capacity, gpu\_type\_name\}
+\]
+
+\textbf{MachineMetric}
+\[
+metric\_id \to \{start\_time, end\_time, worker\_load, cpu\_utilization, gpu\_utilization\}
+\]
+
+\textbf{GPUType}
+\[
+gpu\_type\_name \to \{memory\_gb\}
+\]
+
+\textbf{CompatibleWith}
+\[
+(model\_id, gpu\_type\_name) \rightarrow \varnothing
+\]
+
+\bigskip
+\hrule
+\bigskip
+
+All determinants are superkeys, so all relations satisfy BCNF.
+
+\end{document}

@@ -27,8 +27,10 @@ CREATE TABLE GPUServer(
     memory_capacity INT,
     gpu_capacity INT,
 
-    region_id INT FOREIGN KEY REFERENCES Region(region_id),
-    gpu_type_name VARCHAR(100) FOREIGN KEY REFERENCES GPUType(gpu_type_name)
+    region_id INT,
+    gpu_type_name VARCHAR(100),
+    FOREIGN KEY(region_id) REFERENCES Region(region_id),
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
 );
 
 CREATE TABLE InferenceRequest(
@@ -39,9 +41,12 @@ CREATE TABLE InferenceRequest(
     status VARCHAR(100),
     response_time_ms DOUBLE,
 
-    region_id INT FOREIGN KEY REFERENCES Region(region_id),
-    model_id INT FOREIGN KEY REFERENCES AIModel(model_id),
-    machine_id VARCHAR(100) FOREIGN KEY REFERENCES GPUServer(machine_id)
+    region_id INT,
+    model_id INT,
+    machine_id VARCHAR(100),
+    FOREIGN KEY(region_id) REFERENCES Region(region_id),
+    FOREIGN KEY(model_id) REFERENCES AIModel(model_id),
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
 );
 
 CREATE TABLE MachineMetric(
@@ -53,7 +58,8 @@ CREATE TABLE MachineMetric(
     gpu_utilization DOUBLE,
     cpu_utilization DOUBLE,
 
-    machine_id VARCHAR(100) FOREIGN KEY REFERENCES GPUServer(machine_id)
+    machine_id VARCHAR(100),
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
 );
 
 -- Many-to-many relationship:

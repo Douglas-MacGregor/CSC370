@@ -50,3 +50,7 @@ dist/
 
 # Generated data
 data/generated/
+
+# Raw Kaggle dataset (Very large files. See README for download link)
+data/raw/
+data/processed/

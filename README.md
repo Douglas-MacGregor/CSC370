@@ -6,7 +6,7 @@ This project will develop an information system for analyzing machine learning w
 
 ## Project Links
 
-- [Sprint Goals](./docs/Goals.md)
+- [Sprint Goals](./docs/goals.md)
 - [Dataset Link](https://www.kaggle.com/datasets/derrickmwiti/cluster-trace-gpu-v2020/data)
 - [Dataset-to-Schema Mapping](./docs/data-mapping.md)
 - [AI Usage Declaration](./docs/ai-declaration.md)
@@ -62,7 +62,7 @@ VALUES (2, 'ctr');
 ```
 
 Replacing these with multi-row inserts is planned as a future goal (see
-[Sprint Goals](./docs/Goals.md)).
+[Sprint Goals](./docs/goals.md)).
 
 To change what gets inserted into a table, edit its template. To change which data
 goes into it, edit its population script. Then rerun `main.py`. Pass table names to

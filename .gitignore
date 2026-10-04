@@ -54,3 +54,11 @@ data/generated/
 # Raw Kaggle dataset (Very large files. See README for download link)
 data/raw/
 data/processed/
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.out
+*.toc

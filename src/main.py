@@ -1,1 +1,0 @@
-# File for future use to automate table creation and data insertion into the database. Currently, it is not being used in the project.

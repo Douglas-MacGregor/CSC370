@@ -8,6 +8,22 @@ This project will develop an information system for analyzing machine learning w
 
 - [Sprint Goals](./docs/Goals.md)
 - [Dataset Link](https://www.kaggle.com/datasets/derrickmwiti/cluster-trace-gpu-v2020/data)
+- [Dataset-to-Schema Mapping](./docs/data-mapping.md)
+- [AI Usage Declaration](./docs/ai-declaration.md)
+
+## Setup
+
+1. Download the [dataset](https://www.kaggle.com/datasets/derrickmwiti/cluster-trace-gpu-v2020/data)
+   and extract the CSVs into `data/raw/` (gitignored; not committed due to size).
+2. Install MySQL locally, e.g. `brew install mysql && brew services start mysql`.
+3. Regenerate the sample data load (optional — `sql/data.sql` is already
+   committed): `python3 src/etl.py`.
+4. Load the database:
+    ```
+    mysql -u root < sql/schema.sql
+    mysql -u root < sql/data.sql
+    mysql -u root --table < sql/queries.sql
+    ```
 
 ## Authors
 

@@ -131,3 +131,60 @@ Continue applying new database design concepts introduced in future lectures to 
 - Relevant changes are implemented where they improve the database design.
 - Any changes remain consistent with the project requirements and existing database structure.
 - Major design changes and the reasoning behind them are documented.
+
+## Goal 11: Move Data Transformation into SQL Using Staging Tables
+
+### Objective
+
+Shift the data transformation work currently done in Python over to SQL. Raw dataset files are loaded as-is into staging tables, and the final tables are then populated from the staging tables using SQL, so that filtering, joining, deduplicating and sampling the data are all demonstrated in SQL.
+
+### Acceptance Criteria
+
+- Staging tables are created for the raw dataset files used by the project.
+- Python's role is limited to loading raw data and running SQL files.
+- Final tables are populated from staging tables using SQL.
+- Transformation logic (filtering, joins, deduplication, sampling, ID assignment) is implemented in SQL rather than Python.
+- Loaded data matches the data produced by the previous Python-based approach, or any differences are documented.
+- Staging tables are cleaned up once the final tables are populated.
+
+## Goal 12: Improve Data Insertion Efficiency
+
+### Objective
+
+Insert data more efficiently by inserting many rows per statement instead of repeating a separate `INSERT INTO` statement for every row, while keeping the insertion SQL readable and maintainable.
+
+### Acceptance Criteria
+
+- Each table is populated without a separate `INSERT INTO` statement per row.
+- Large tables load successfully within MySQL's limits.
+- Insertion SQL remains written in separate SQL files that are easy to read.
+- Load times before and after the change are compared.
+
+## Goal 13: Strengthen the Schema with Constraints
+
+### Objective
+
+Improve data integrity by adding constraints to the schema so that the database itself rejects invalid data.
+
+### Acceptance Criteria
+
+- `NOT NULL` is applied to attributes that must always have a value.
+- `CHECK` constraints enforce valid ranges and relationships between attributes (e.g. non-negative values, end times after start times).
+- Attributes with a fixed set of values (e.g. request status) are changed from `VARCHAR` to `ENUM` where applicable, so that only those values are accepted.
+- Foreign key behaviour on delete and update is defined.
+- Constraints are tested by attempting to insert invalid data.
+- Any constraint that conflicts with the real dataset is documented along with how it was handled.
+
+## Goal 14: Sort Query Results with ORDER BY
+
+### Objective
+
+Use `ORDER BY` in the project queries so that results come back in a meaningful, predictable order (e.g. highest latency first, most recent requests first) and are easier to read and interpret.
+
+### Acceptance Criteria
+
+- `ORDER BY` is added to queries where the order of results matters.
+- Sorting is demonstrated in both ascending and descending order.
+- At least one query sorts on multiple columns.
+- At least one query sorts on an aggregated or computed value.
+- Sorted results are checked to confirm they are returned in the expected order.

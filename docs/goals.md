@@ -1,6 +1,12 @@
+# Table of Contents
+
+- [Sprint One Goals](#sprint-one-goals)
+- [Sprint Two Goals](#sprint-two-goals)
+- [Future Sprint Goals](#future-sprint-goals)
+
 # Sprint One Goals
 
-## Goal 1: Select a Project Topic and Define Requirements
+## Goal: Select a Project Topic and Define Requirements
 
 ### Objective
 
@@ -12,7 +18,7 @@ Select a suitable database-driven information system and define a clear set of f
 - Key users/stakeholders are identified.
 - Project is approved by the team and TA
 
-## Goal 2: Complete an Initial Entity-Relationship Diagram
+## Goal: Complete an Initial Entity-Relationship Diagram
 
 ### Objective
 
@@ -25,7 +31,7 @@ Develop an initial conceptual database design based on the project requirements.
 - Relationships between entities are represented.
 - ER diagram reflects the project requirements.
 
-## Goal 3: Define Relationship Multiplicity
+## Goal: Define Relationship Multiplicity
 
 ### Objective
 
@@ -37,7 +43,7 @@ Define/figure out the types of between relationships different entities.
 - One-to-one, one-to-many, and many-to-many relationships are identified.
 - Many-to-many relationships have appropriate associative entities.
 
-## Goal 4: Normalize the Database to BCNF
+## Goal: Normalize the Database to BCNF
 
 ### Objective
 
@@ -51,7 +57,7 @@ Transform the relational schema into a normalized design that satisfies the norm
 - Primary and foreign keys are defined.
 - Final schema remains consistent with the requirements.
 
-## Goal 5: Set Up MySQL and Create Tables
+## Goal: Set Up MySQL and Create Tables
 
 ### Objective
 
@@ -67,9 +73,77 @@ Get each group members computer's set up and ready for furture work on mySQL. Ha
 
 ---
 
+# Sprint Two Goals
+
+## Goal: Define Constraints and Create SQL for Referential Integrity
+
+### Objective
+
+Define database constraints using relational algebra notation and implement referential integrity constraints in SQL to ensure data consistency.
+
+### Acceptance Criteria
+
+- Constraints are expressed using relational algebra notation.
+- Primary key and foreign key constraints are implemented.
+- SQL constraints prevent invalid or inconsistent data.
+- Constraints are demonstrated using SQL queries.
+
+## Goal: Incorporate Inheritance and Weak Entity Sets into Database Design
+
+### Objective
+
+Evaluate the existing ER diagram and incorporate inheritance and weak entity sets where appropriate.
+
+### Acceptance Criteria
+
+- The ER diagram is evaluated against established design principles.
+- Appropriate opportunities for inheritance and weak entity sets are identified.
+- Design changes are consistent with the project requirements.
+- The relational schema reflects the updated design.
+
+## Goal: Calculate Minimal Bases and Project Relational Dependencies
+
+### Objective
+
+Simplify functional dependencies by calculating a minimal basis and determine the dependencies that hold when projected onto decomposed relations.
+
+### Acceptance Criteria
+
+- Functional dependencies are identified and simplified into a minimal basis.
+- Functional dependencies are projected onto relevant relations.
+- Dependency preservation is evaluated for the decomposition.
+
+## Goal: Apply Third and Fourth Normal Forms
+
+### Objective
+
+Evaluate the relational schema for 3NF and 4NF, decomposing relations where necessary to reduce redundancy and prevent update anomalies.
+
+### Acceptance Criteria
+
+- Functional dependencies are evaluated to determine whether relations satisfy 3NF.
+- Multivalued dependencies are identified where applicable.
+- Relations are decomposed into 3NF or 4NF where necessary.
+- Dependency preservation is evaluated for the resulting decomposition.
+
+## Goal: Perform Initial Time Trials
+
+### Objective
+
+Conduct initial performance experiments on the database to establish a baseline for query execution times.
+
+### Acceptance Criteria
+
+- Representative queries are selected for testing.
+- Query execution times are measured and recorded.
+- The test environment and dataset are documented.
+- Initial results are recorded for comparison in future sprints.
+
+---
+
 # Future Sprint Goals
 
-## Goal 6: Expand the Database Dataset
+## Goal: Expand the Database Dataset
 
 ### Objective
 
@@ -81,7 +155,7 @@ Explore the process of loading a larger portion of the project dataset into the 
 - Data can be queried after loading.
 - Any issues encountered with larger datasets are documented.
 
-## Goal 7: Explore Database Performance
+## Goal: Further Explore Database Performance
 
 ### Objective
 
@@ -93,7 +167,7 @@ Investigate how database size and query complexity affect system performance.
 - Performance issues, if any, are identified and documented.
 - Potential improvements are investigated where appropriate.
 
-## Goal 8: Implement Database Queries
+## Goal: Implement Database Queries
 
 ### Objective
 
@@ -105,7 +179,7 @@ Develop queries that demonstrate the functionality and usefulness of the databas
 - Queries return correct results.
 - Query performance is evaluated where appropriate.
 
-## Goal 9: Improve and Refine the Database
+## Goal: Improve and Refine the Database
 
 ### Objective
 
@@ -117,74 +191,39 @@ Review the database design and implementation based on testing and project needs
 - Appropriate improvements are implemented where feasible.
 - Changes remain consistent with the project requirements.
 
-## Goal 10: Apply Additional Database Design Concepts
+## Goal: Develop and Optimize Complex SQL Queries
 
 ### Objective
 
-Continue applying new database design concepts introduced in future lectures to further review and refine the ERD and database design where appropriate. For example, concepts such as inheritance, generalisation, subsets, or weak entity sets could be explored if they fit the project requirements.
+Develop complex SQL queries using aggregation, subqueries, and data manipulation, and evaluate query performance using indexes.
 
 ### Acceptance Criteria
 
-- New database design concepts taught in future lectures are reviewed for relevance to the project.
-- Potential improvements to the ERD or relational schema are identified.
-- Concepts such as inheritance or generalisation are explored where appropriate.
-- Relevant changes are implemented where they improve the database design.
-- Any changes remain consistent with the project requirements and existing database structure.
-- Major design changes and the reasoning behind them are documented.
+- Aggregation queries use `WHERE`, `HAVING`, and functional dependency attributes where appropriate.
+- Subqueries combine aggregations with existential conditions.
+- Data is inserted or deleted based on complex query predicates.
+- Query performance is evaluated using `EXPLAIN` and non-primary indexes.
 
-## Goal 11: Move Data Transformation into SQL Using Staging Tables
+## Goal: Evaluate and Simplify Complex Queries
 
 ### Objective
 
-Shift the data transformation work currently done in Python over to SQL. Raw dataset files are loaded as-is into staging tables, and the final tables are then populated from the staging tables using SQL, so that filtering, joining, deduplicating and sampling the data are all demonstrated in SQL.
+Analyze complex SQL queries to understand how subqueries, joins, and aggregation affect query structure and execution.
 
 ### Acceptance Criteria
 
-- Staging tables are created for the raw dataset files used by the project.
-- Python's role is limited to loading raw data and running SQL files.
-- Final tables are populated from staging tables using SQL.
-- Transformation logic (filtering, joins, deduplication, sampling, ID assignment) is implemented in SQL rather than Python.
-- Loaded data matches the data produced by the previous Python-based approach, or any differences are documented.
-- Staging tables are cleaned up once the final tables are populated.
+- A complex query is simplified by replacing a subquery with a join where appropriate.
+- Alternative query formulations are compared for correctness and readability.
+- Query execution plans are examined to understand performance differences.
 
-## Goal 12: Improve Data Insertion Efficiency
+## Goal: Enforce Database Consistency Using Advanced SQL
 
 ### Objective
 
-Insert data more efficiently by inserting many rows per statement instead of repeating a separate `INSERT INTO` statement for every row, while keeping the insertion SQL readable and maintainable.
+Explore how triggers and SQL's three-valued logic can enforce data consistency and handle NULL values in database queries.
 
 ### Acceptance Criteria
 
-- Each table is populated without a separate `INSERT INTO` statement per row.
-- Large tables load successfully within MySQL's limits.
-- Insertion SQL remains written in separate SQL files that are easy to read.
-- Load times before and after the change are compared.
-
-## Goal 13: Strengthen the Schema with Constraints
-
-### Objective
-
-Improve data integrity by adding constraints to the schema so that the database itself rejects invalid data.
-
-### Acceptance Criteria
-
-- `NOT NULL` is applied to attributes that must always have a value.
-- `CHECK` constraints enforce valid ranges and relationships between attributes (e.g. non-negative values, end times after start times).
-- Attributes with a fixed set of values (e.g. request status) are changed from `VARCHAR` to `ENUM` where applicable, so that only those values are accepted.
-- Foreign key behaviour on delete and update is defined.
-- Constraints are tested by attempting to insert invalid data.
-- Any constraint that conflicts with the real dataset is documented along with how it was handled.
-
-## Goal 14: Sort Query Results with ORDER BY
-
-### Objective
-
-Use `ORDER BY` in the project queries so that results come back in a meaningful, predictable order (e.g. highest latency first, most recent requests first) and are easier to read and interpret.
-
-### Acceptance Criteria
-
-- `ORDER BY` is added to queries where the order of results matters.
-- Sorting is demonstrated in both ascending and descending order.
-- At least one query sorts on multiple columns.
-- At least one query sorts on an aggregated or computed value.
-- Sorted results are checked to confirm they are returned in the expected order.
+- Triggers are implemented to enforce a relevant database consistency rule.
+- Queries involving NULL values are evaluated using three-valued logic.
+- The effects of NULL values on query predicates and results are demonstrated.

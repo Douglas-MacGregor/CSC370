@@ -1,0 +1,269 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\title{Projected Functional Dependencies and Dependency Preservation}
+\author{}
+\date{}
+
+\newcommand{\fd}{\rightarrow}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\projlabel}[1]{\text{\small\bfseries #1}}
+\setlength{\jot}{4pt}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{section}{4}
+
+\section{Projecting the Functional Dependencies}
+
+The minimal basis from that document is used as $F_{min}$. The two references to
+\code{Region} are temporarily distinguished as \code{request\_region\_id} and
+\code{server\_region\_id}, both are stored as \code{region\_id} in their respective tables as mentioned in the FD and Minimal Basis Document
+
+\subsection{Projection procedure}
+
+For each relation we:
+
+\begin{enumerate}
+    \item Choose a non-empty attribute set $C \subseteq S$.
+    \item Calculate $\{C\}^{+}$ using $F_{min}$.
+    \item Restrict the closure to $S$ using $\{C\}^{+} \cap S$.
+    \item Record the non-trivial FDs and simplify them to a minimal basis.
+\end{enumerate}
+
+In principle every non-empty subset is considered. The first few projections are shown in
+more detail. The remaining relations use the same procedure:
+
+\[
+\boxed{\text{Relation} \;\longrightarrow\; \text{Closure} \;\longrightarrow\;
+\text{Intersection} \;\longrightarrow\; \text{Projected basis}}
+\]
+
+\subsection{Worked projection: Region}
+
+\begin{align*}
+\projlabel{Relation:} &\quad R = \{region\_id, region\_name, country\},\\
+\projlabel{Closure:} &\quad \{region\_id\}^{+}
+= \{region\_id, region\_name, country\},\\
+\projlabel{Intersection:} &\quad \{region\_id\}^{+} \cap R = R.
+\end{align*}
+
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\[
+region\_id \fd region\_name,
+\qquad
+region\_id \fd country.
+\]
+
+\subsection{Worked projection: GPUServer}
+
+\begin{align*}
+\projlabel{Relation:} &\quad GS = \{machine\_id, cpu\_capacity, memory\_capacity, gpu\_capacity,\\
+&\qquad\qquad server\_region\_id, gpu\_type\_name\}.
+\end{align*}
+
+Using $F_{min}$:
+\begin{align*}
+\projlabel{Closure:} &\quad \{machine\_id\}^{+}
+= \{machine\_id, cpu\_capacity, memory\_capacity, gpu\_capacity,\\
+&\qquad\qquad server\_region\_id, gpu\_type\_name, memory\_gb\},\\
+\projlabel{Intersection:} &\quad \{machine\_id\}^{+} \cap GS = GS.
+\end{align*}
+
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\begin{align*}
+machine\_id &\fd cpu\_capacity &
+ machine\_id &\fd memory\_capacity\\
+machine\_id &\fd gpu\_capacity &
+ machine\_id &\fd server\_region\_id\\
+machine\_id &\fd gpu\_type\_name.&&
+\end{align*}
+
+Note that \code{server\_region\_id} is stored as \code{region\_id} in the table.
+
+\subsection{Worked projection: MachineMetric}
+
+\begin{align*}
+\projlabel{Relation:} &\quad MM = \{machine\_id, metric\_id, start\_time, end\_time,\\
+&\qquad\qquad worker\_load, gpu\_utilization, cpu\_utilization\}.
+\end{align*}
+
+First we check each part of the weak entity identifier:
+\begin{align*}
+\projlabel{Single-attribute closures:} &\quad
+\{machine\_id\}^{+} \cap MM = \{machine\_id\},\\
+&\quad \{metric\_id\}^{+} \cap MM = \{metric\_id\}.
+\end{align*}
+
+Neither alone determines the metric row. Thus:
+\begin{align*}
+\projlabel{Closure:} &\quad \{machine\_id, metric\_id\}^{+}\\
+&\quad = \{machine\_id, metric\_id, cpu\_capacity, memory\_capacity,\\
+&\qquad gpu\_capacity, server\_region\_id, gpu\_type\_name, memory\_gb,\\
+&\qquad start\_time, end\_time, worker\_load, gpu\_utilization, cpu\_utilization\},\\
+\projlabel{Intersection:} &\quad \{machine\_id, metric\_id\}^{+} \cap MM = MM.
+\end{align*}
+
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\begin{align*}
+\{machine\_id, metric\_id\} &\fd start\_time &
+\{machine\_id, metric\_id\} &\fd end\_time\\
+\{machine\_id, metric\_id\} &\fd worker\_load &
+\{machine\_id, metric\_id\} &\fd gpu\_utilization\\
+\{machine\_id, metric\_id\} &\fd cpu\_utilization.&&
+\end{align*}
+
+This confirms that both attributes are required in the weak entity's full identifier.
+
+\subsection{Worked projection: Hosts}
+
+\begin{align*}
+\projlabel{Relation:} &\quad H = \{machine\_id, model\_id\},\\
+\projlabel{Closures:} &\quad \{machine\_id\}^{+} \cap H = \{machine\_id\},\\
+&\quad \{model\_id\}^{+} \cap H = \{model\_id\},\\
+\projlabel{Intersection:} &\quad \{machine\_id, model\_id\}^{+} \cap H = H.
+\end{align*}
+
+\noindent\textbf{Projected minimal basis:} No non-trivial FDs. The final intersection
+produces only trivial dependencies.
+
+\subsection{Remaining relation projections}
+
+The remaining relations follow the same procedure as shown above.
+
+\paragraph{GPUType.}
+\begin{align*}
+\projlabel{Relation:} &\quad G = \{gpu\_type\_name\},\\
+\projlabel{Closure:} &\quad \{gpu\_type\_name\}^{+}
+= \{gpu\_type\_name, memory\_gb\},\\
+\projlabel{Intersection:} &\quad \{gpu\_type\_name\}^{+} \cap G = G.
+\end{align*}
+\noindent\textbf{Projected minimal basis:} No non-trivial FDs.
+
+\paragraph{SpecificGPUType.}
+\begin{align*}
+\projlabel{Relation:} &\quad SG = \{gpu\_type\_name, memory\_gb\},\\
+\projlabel{Closure:} &\quad \{gpu\_type\_name\}^{+}
+= \{gpu\_type\_name, memory\_gb\},\\
+\projlabel{Intersection:} &\quad \{gpu\_type\_name\}^{+} \cap SG = SG.
+\end{align*}
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\[
+gpu\_type\_name \fd memory\_gb.
+\]
+
+\paragraph{AIModel.}
+\begin{align*}
+\projlabel{Relation:} &\quad M = \{model\_id, model\_name\},\\
+\projlabel{Closure:} &\quad \{model\_id\}^{+}
+= \{model\_id, model\_name\},\\
+\projlabel{Intersection:} &\quad \{model\_id\}^{+} \cap M = M.
+\end{align*}
+
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\[
+model\_id \fd model\_name.
+\]
+
+\paragraph{InferenceRequest.}
+\begin{align*}
+\projlabel{Relation:} &\quad Q = \{request\_id, submitted\_at, input\_size, status,\\
+&\qquad\qquad response\_time\_ms, request\_region\_id, model\_id, machine\_id\}.
+\end{align*}
+
+The closure of \code{request\_id} also reaches attributes outside $Q$ through
+\code{model\_id} and \code{machine\_id}; only attributes in $Q$ are kept during projection.
+\begin{align*}
+\projlabel{Closure:} &\quad \{request\_id\}^{+}\\
+&\quad = \{request\_id, submitted\_at, input\_size, status, response\_time\_ms,\\
+&\qquad request\_region\_id, model\_id, machine\_id, model\_name,\\
+&\qquad cpu\_capacity, memory\_capacity, gpu\_capacity, server\_region\_id,\\
+&\qquad gpu\_type\_name, memory\_gb\},\\
+\projlabel{Intersection:} &\quad \{request\_id\}^{+} \cap Q = Q.
+\end{align*}
+
+\begin{center}
+    \textbf{Projected minimal basis:}
+\end{center}
+\begin{align*}
+request\_id &\fd submitted\_at & request\_id &\fd input\_size\\
+request\_id &\fd status & request\_id &\fd response\_time\_ms\\
+request\_id &\fd request\_region\_id & request\_id &\fd model\_id\\
+request\_id &\fd machine\_id.&&
+\end{align*}
+
+\code{request\_region\_id} is stored as \code{region\_id} in the table as mentioned above.
+
+\paragraph{CompatibleWith.}
+\begin{align*}
+\projlabel{Relation:} &\quad CW = \{model\_id, gpu\_type\_name\},\\
+\projlabel{Closures:} &\quad \{model\_id\}^{+} \cap CW = \{model\_id\},\\
+&\quad \{gpu\_type\_name\}^{+} \cap CW = \{gpu\_type\_name\},\\
+\projlabel{Intersection:} &\quad \{model\_id, gpu\_type\_name\}^{+} \cap CW = CW.
+\end{align*}
+\noindent\textbf{Projected minimal basis:} No non-trivial FDs.
+
+\subsection{Projected Minimal Bases Summary}
+
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.24\textwidth} >{\raggedright\arraybackslash}p{0.67\textwidth}}
+\toprule
+\textbf{Relation} & \textbf{Projected minimal basis}\\
+\midrule
+Region & $region\_id \fd region\_name$, $region\_id \fd country$\\
+GPUType & No non-trivial FDs\\
+SpecificGPUType & $gpu\_type\_name \fd memory\_gb$\\
+AIModel & $model\_id \fd model\_name$\\
+GPUServer & $machine\_id \fd$ each non-key server attribute\\
+InferenceRequest & $request\_id \fd$ each non-key/FK request attribute\\
+MachineMetric & $\{machine\_id,metric\_id\} \fd$ each metric attribute\\
+Hosts & No non-trivial FDs\\
+CompatibleWith & No non-trivial FDs\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Dependency Preservation}
+
+Let $P$ be the union of the projected minimal bases above. After mapping the temporary
+region role names back to the corresponding local \code{region\_id} columns, $P$ contains
+the same 21 non-trivial dependencies as $F_{min}$:
+
+\[
+P = F_{min}
+\qquad\Longrightarrow\qquad
+P^{+}=F_{min}^{+}.
+\]
+
+Every dependency can therefore be checked within a single final relation. No dependency
+from $F_{min}$ requires joining relations in order to enforce it, so the current
+decomposition is \textbf{dependency preserving} for the identified functional dependencies.
+
+\enlargethispage{3\baselineskip}
+\section{Conclusion}
+
+The minimal basis was projected onto every relation using the lecture procedure of
+calculating closures, intersecting with the target relation, and simplifying the result.
+The union of the projected bases is equivalent to $F_{min}$, so the updated Sprint Two
+schema preserves the identified functional dependencies.
+
+\end{document}

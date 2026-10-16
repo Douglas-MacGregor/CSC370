@@ -1,0 +1,173 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\title{Functional Dependencies and Minimal Basis}
+\author{}
+\date{}
+
+\newcommand{\fd}{\rightarrow}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\begin{document}
+
+\maketitle
+
+\section{Purpose}
+
+This document records the functional dependency identification and minimal-basis
+work for the Sprint Two goal \emph{Calculate Minimal Bases and Project Relational
+Dependencies}. The projection and dependency-preservation portions of the goal
+will be documented separately. This analysis is based on the current Sprint Two
+ERD.
+
+
+\section{Updated Relational Schema Used for the Analysis}
+
+The updated ERD maps to the following relations:
+
+\begin{align*}
+\text{Region}(&region\_id, region\_name, country)\\
+\text{GPUType}(&gpu\_type\_name)\\
+\text{SpecificGPUType}(&gpu\_type\_name, memory\_gb)\\
+\text{AIModel}(&model\_id, model\_name)\\
+\text{GPUServer}(&machine\_id, cpu\_capacity, memory\_capacity, gpu\_capacity,\\
+&region\_id, gpu\_type\_name)\\
+\text{InferenceRequest}(&request\_id, submitted\_at, input\_size, status,\\
+&response\_time\_ms, region\_id, model\_id, machine\_id)\\
+\text{MachineMetric}(&machine\_id, metric\_id, start\_time, end\_time,\\
+&worker\_load, gpu\_utilization, cpu\_utilization)\\
+\text{Hosts}(&machine\_id, model\_id)\\
+\text{CompatibleWith}(&model\_id, gpu\_type\_name)
+\end{align*}
+
+The primary key of \code{MachineMetric} is now $(machine\_id, metric\_id)$ because
+\code{MachineMetric} is a weak entity owned by \code{GPUServer}. The key of
+\code{SpecificGPUType} is \code{gpu\_type\_name}, it is also a foreign key to the
+parent \code{GPUType} relation.
+
+\subsection*{Region role notation}
+
+The ERD has two different relationships to \code{Region}: a request originates in
+a region, while a server is located in a region. Both local SQL columns are named
+\code{region\_id}, but they represent different roles. To avoid accidentally
+identifying them as the same attribute during the FD calculations, this document
+uses the temporary names
+
+\[
+request\_region\_id \qquad\text{and}\qquad server\_region\_id.
+\]
+
+When projected back onto the individual relations, both are written as the local name \code{region\_id}.
+
+\section{Functional Dependencies from the ERD}
+
+The identifier of a strong entity
+functionally determines its non-identifier attributes. A many-to-one relationship
+also means the identifier on the many side determines the identifier on the one
+side. For the weak \code{MachineMetric} entity, the full identifier is the union of
+the owner identifier and the weak entity's local identifier. Before splitting right-hand sides, the non-trivial project dependencies are:
+
+\begin{align*}
+region\_id &\fd \{region\_name, country\}\\
+model\_id &\fd model\_name\\
+gpu\_type\_name &\fd memory\_gb \quad \text{(within SpecificGPUType)}\\
+machine\_id &\fd \{cpu\_capacity, memory\_capacity, gpu\_capacity,\\
+&\qquad server\_region\_id, gpu\_type\_name\}\\
+request\_id &\fd \{submitted\_at, input\_size, status, response\_time\_ms,\\
+&\qquad request\_region\_id, model\_id, machine\_id\}\\
+\{machine\_id, metric\_id\} &\fd \{start\_time, end\_time, worker\_load,\\
+&\qquad gpu\_utilization, cpu\_utilization\}.
+\end{align*}
+
+\code{Hosts} and \code{CompatibleWith} are many-to-many relations with no
+non-key relationship attributes. Therefore neither relation contributes a
+non-trivial FD between its two participating identifiers. Their composite key
+constraints still remain part of the relational schema.
+
+\section{Minimal Basis}
+\begin{enumerate}
+    \item Split every FD so that each right-hand side contains one attribute.
+    \item Try removing each FD, if the remaining FDs still imply it, remove it.
+    \item Try removing attributes from the left-hand side of each FD; if the remaining left-hand side still implies the right-hand side, we will remove the extraneous attribute.
+\end{enumerate}
+
+\subsection{Step 1: Split the right-hand sides}
+
+After using the splitting rule, the candidate basis is:
+
+\begin{align*}
+region\_id &\fd region\_name\\
+region\_id &\fd country\\
+model\_id &\fd model\_name\\
+gpu\_type\_name &\fd memory\_gb\\
+machine\_id &\fd cpu\_capacity\\
+machine\_id &\fd memory\_capacity\\
+machine\_id &\fd gpu\_capacity\\
+machine\_id &\fd server\_region\_id\\
+machine\_id &\fd gpu\_type\_name\\
+request\_id &\fd submitted\_at\\
+request\_id &\fd input\_size\\
+request\_id &\fd status\\
+request\_id &\fd response\_time\_ms\\
+request\_id &\fd request\_region\_id\\
+request\_id &\fd model\_id\\
+request\_id &\fd machine\_id\\
+\{machine\_id, metric\_id\} &\fd start\_time\\
+\{machine\_id, metric\_id\} &\fd end\_time\\
+\{machine\_id, metric\_id\} &\fd worker\_load\\
+\{machine\_id, metric\_id\} &\fd gpu\_utilization\\
+\{machine\_id, metric\_id\} &\fd cpu\_utilization.
+\end{align*}
+
+\subsection{Step 2: Remove redundant FDs}
+
+Each FD was tested by temporarily removing it and calculating the closure of its left-hand side under the remaining dependencies. None of the removed right-hand-side attributes could still be derived, so no redundant FD was found.
+
+For example, if
+\[
+machine\_id \fd gpu\_type\_name
+\]
+is removed, $\{machine\_id\}^{+}$ under the remaining dependencies does not
+contain \code{gpu\_type\_name}. Therefore that FD must remain.
+
+\subsection{Step 3: Remove extraneous left-hand-side attributes}
+
+All determinants are single attributes except the weak entity dependencies for
+\code{MachineMetric}. For those dependencies:
+
+\begin{itemize}
+    \item $\{metric\_id\}^{+}$ does not determine any metric measurement
+          attributes, so \code{machine\_id} cannot be removed.
+    \item $\{machine\_id\}^{+}$ determines server information, but it does not
+          determine a particular metric record's measurement attributes, so
+          \code{metric\_id} cannot be removed.
+\end{itemize}
+
+Therefore $\{machine\_id, metric\_id\}$ is minimal on the left-hand side.
+
+\subsection{Conclusion}
+
+After applying all three minimal-basis steps from lecture, the candidate basis from Section 4.1 satisfies the required conditions:
+
+\begin{itemize}
+    \item every functional dependency has a single attribute on the right-hand side;
+    \item removing any one of the listed dependencies prevents its right-hand-side
+          attribute from being derived from the same determinant; and
+    \item no attribute can be removed from the composite determinant
+          $\{machine\_id, metric\_id\}$ without losing the corresponding
+          \code{MachineMetric} dependency.
+\end{itemize}
+
+Thus no dependency is redundant and no determinant contains an extraneous
+attribute. The split dependency set listed in Section 4.1 is the project's
+minimal basis, denoted $F_{min}$. Projection of $F_{min}$ onto the final relations will be handled in a separate document.
+
+\end{document}

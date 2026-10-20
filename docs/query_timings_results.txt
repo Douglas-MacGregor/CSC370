@@ -1,3 +1,9 @@
+#######
+#
+# This file contains the result of the query timing experiement ran on Oct 19th 2026 - Douglas
+#
+#####
+
 # Wall-clock query time in milliseconds (one value per run)
 01_gpu_capacities_given_region: 1.814 0.721 0.738	Average: 1.091
 02_failed_inference_requests: 535.077 462.948 459.368	Average: 485.798

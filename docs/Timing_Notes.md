@@ -1,6 +1,6 @@
 # Running the Timing Experiment
 
-## Setup
+## Steps to reproduce
 
 set up python virtual env
 

@@ -21,6 +21,7 @@ DEFAULT_SEED = 370
 DEFAULT_MAX_SERVERS = 500
 DEFAULT_MAX_METRICS = 2_000
 DEFAULT_MAX_REQUESTS = 1_000
+INSERT_BATCH_SIZE = 1_000
 
 REGIONS = [
     (1, "us-west", "United States"),
@@ -80,7 +81,8 @@ def build_rows(
         raise ValueError("No GPU server rows were found in pai_machine_spec.csv")
 
     gpu_names = sorted(specs["gpu_type"].dropna().astype(str).unique())
-    gpu_types = [
+    gpu_types = [(name,) for name in gpu_names]
+    specific_gpu_types = [
         (name, GPU_MEMORY_GB.get(name, rng.randint(8, 32))) for name in gpu_names
     ]
     servers = [
@@ -160,6 +162,7 @@ def build_rows(
     return {
         "regions": REGIONS,
         "gpu_types": gpu_types,
+        "specific_gpu_types": specific_gpu_types,
         "models": models,
         "servers": servers,
         "metrics": metrics,
@@ -173,7 +176,11 @@ def insert_rows(connection: Any, rows: dict[str, list[tuple[Any, ...]]]) -> None
     """Insert all generated rows in foreign-key order as one transaction."""
     statements = [
         ("regions", "INSERT INTO Region (region_id, region_name, country) VALUES (%s, %s, %s)"),
-        ("gpu_types", "INSERT INTO GPUType (gpu_type_name, memory_gb) VALUES (%s, %s)"),
+        ("gpu_types", "INSERT INTO GPUType (gpu_type_name) VALUES (%s)"),
+        (
+            "specific_gpu_types",
+            "INSERT INTO SpecificGPUType (gpu_type_name, memory_gb) VALUES (%s, %s)",
+        ),
         ("models", "INSERT INTO AIModel (model_id, model_name) VALUES (%s, %s)"),
         (
             "servers",
@@ -196,8 +203,11 @@ def insert_rows(connection: Any, rows: dict[str, list[tuple[Any, ...]]]) -> None
     cursor = connection.cursor()
     try:
         for key, statement in statements:
-            if rows[key]:
-                cursor.executemany(statement, rows[key])
+            for start in range(0, len(rows[key]), INSERT_BATCH_SIZE):
+                cursor.executemany(
+                    statement,
+                    rows[key][start : start + INSERT_BATCH_SIZE],
+                )
         connection.commit()
     except Exception:
         connection.rollback()

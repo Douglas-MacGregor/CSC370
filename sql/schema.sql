@@ -1,6 +1,7 @@
 -- Table creation code
 -- Note on foreign keys:
 --   Many-to-one: the ONE side's primary key is stored as a foreign key in the MANY side
+
 CREATE TABLE Region(
     region_id INT PRIMARY KEY,
 
@@ -9,9 +10,18 @@ CREATE TABLE Region(
 );
 
 CREATE TABLE GPUType(
+    gpu_type_name VARCHAR(100) PRIMARY KEY
+);
+
+-- Inheritance:
+-- SpecificGPUType is a subset of GPUType and stores extra GPU-specific information such as memory size
+CREATE TABLE SpecificGPUType(
+    -- PK and FK to represent inheritance relationship
     gpu_type_name VARCHAR(100) PRIMARY KEY,
 
-    memory_gb INT
+    memory_gb INT,
+
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
 );
 
 CREATE TABLE AIModel(
@@ -49,8 +59,10 @@ CREATE TABLE InferenceRequest(
     FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
 );
 
+-- Weak entity:
+-- MachineMetric uses the owner key and local metric_id as a composite primary key
 CREATE TABLE MachineMetric(
-    metric_id INT PRIMARY KEY,
+    metric_id INT, -- local primary key
 
     start_time DOUBLE,
     end_time DOUBLE,
@@ -58,7 +70,8 @@ CREATE TABLE MachineMetric(
     gpu_utilization DOUBLE,
     cpu_utilization DOUBLE,
 
-    machine_id VARCHAR(100),
+    machine_id VARCHAR(100), -- FK and PK representing the owner relationship
+    PRIMARY KEY(machine_id, metric_id),
     FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
 );
 

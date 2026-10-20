@@ -1,0 +1,45 @@
+# Wall-clock query time in milliseconds (one value per run)
+01_gpu_capacities_given_region: 1.814 0.721 0.738	Average: 1.091
+02_failed_inference_requests: 535.077 462.948 459.368	Average: 485.798
+03_inference_requests_response_time_high: 1611.762 1622.584 1670.591	Average: 1634.979
+04_gpu_types_used_in_servers: 4.107 0.514 0.496	Average: 1.706
+05_gpu_servers_extended: 3.837 2.972 2.832	Average: 3.214
+06_inference_requests_extended: 2478.192 2474.749 2441.773	Average: 2464.905
+07_hosts_with_models: 5.582 2.302 2.197	Average: 3.360
+08_machine_metrics_gpu_above_threshold: 2.113 0.626 0.551	Average: 1.097
+09_inference_requests_cross_region: 9800.522 11555.449 12754.794	Average: 11370.255
+10_gpu_server_pairs_same_type_diff_region: 7.780 7.063 6.718	Average: 7.187
+11_machine_metrics_gpu_above_cpu: 418.794 406.406 415.259	Average: 413.486
+12_gpu_servers_region_or_gpu_type: 1.240 0.489 0.530	Average: 0.753
+13_machines_hosting_both_models: 2.103 0.538 0.565	Average: 1.069
+14_models_not_hosted: 1.371 0.107 0.089	Average: 0.522
+15_gpu_servers_no_requests: 195.072 19.316 18.794	Average: 77.727
+16_hosts_incompatible_gpu_type: 5.240 5.283 4.008	Average: 4.844
+17_region_gpu_type_no_servers: 1.062 0.755 0.490	Average: 0.769
+
++----------+-----------+----------+
+| Database | Size (MB) | Size (GB) |
++----------+-----------+-----------+
+| csc370   |    365.84 |    0.3573 |
++----------+-----------+-----------+
+
++------------------+----------+
+| TableName        | RowCount |
++------------------+----------+
+| AIModel          |        9 |
+| CompatibleWith   |       29 |
+| GPUServer        |     1814 |
+| GPUType          |        5 |
+| Hosts            |     4052 |
+| InferenceRequest |  1000000 |
+| MachineMetric    |  1000000 |
+| Region           |        5 |
++------------------+----------+
+
+
+What the tests where ran on 
+
+Architecture : ARM64
+Memory: 8GB
+Size: 14.49GB
+OS: Ubuntu 26.04.1 on UTM 

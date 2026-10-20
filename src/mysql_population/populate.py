@@ -21,6 +21,7 @@ DEFAULT_SEED = 370
 DEFAULT_MAX_SERVERS = 500
 DEFAULT_MAX_METRICS = 2_000
 DEFAULT_MAX_REQUESTS = 1_000
+INSERT_BATCH_SIZE = 1_000
 
 REGIONS = [
     (1, "us-west", "United States"),
@@ -202,8 +203,11 @@ def insert_rows(connection: Any, rows: dict[str, list[tuple[Any, ...]]]) -> None
     cursor = connection.cursor()
     try:
         for key, statement in statements:
-            if rows[key]:
-                cursor.executemany(statement, rows[key])
+            for start in range(0, len(rows[key]), INSERT_BATCH_SIZE):
+                cursor.executemany(
+                    statement,
+                    rows[key][start : start + INSERT_BATCH_SIZE],
+                )
         connection.commit()
     except Exception:
         connection.rollback()

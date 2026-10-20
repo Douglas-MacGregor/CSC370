@@ -28,6 +28,23 @@ This project will develop an information system for analyzing machine learning w
     mysql -u root csc370 --table < sql/queries.sql
     ```
 
+## Populate MySQL directly from CSVs
+
+Install the Python dependencies with `python3 -m pip install -r requirements.txt`.
+After applying `sql/schema.sql`, the direct loader can populate the database
+with Pandas and `mysql-connector-python`:
+
+```bash
+python3 -m src.mysql_population.populate --database csc370
+```
+
+The loader reads CSVs from `data/` (or `data/raw/`), uses parameterized
+inserts, and commits all tables in foreign-key order as one transaction.
+Missing values and fields not present in the trace are generated with a
+reproducible random seed (`--seed 370`). Defaults are capped at 500 GPU
+servers, 2,000 metrics, and 1,000 inference requests; adjust those limits
+with `--max-servers`, `--max-metrics`, and `--max-requests`.
+
 ## How the Data Insertion Files Are Generated
 
 The SQL that inserts data is written by hand. Python only fills in the values.

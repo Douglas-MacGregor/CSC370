@@ -35,7 +35,7 @@ After applying `sql/schema.sql`, the direct loader can populate the database
 with Pandas and `mysql-connector-python`:
 
 ```bash
-python3 src/benchmark_queries.py --runs 3 --database csc370
+python3 src/mysql_population/populate.py --database csc370
 ```
 
 The loader reads CSVs from `data/` (or `data/raw/`), uses parameterized

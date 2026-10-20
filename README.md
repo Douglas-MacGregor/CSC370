@@ -19,14 +19,47 @@ This project will develop an information system for analyzing machine learning w
 3. Regenerate the data insertion files (optional — they are already committed),
    from the repo root: `python3 src/data-population/main.py`.
 4. Load the database (tables must be loaded in this order because of foreign keys):
-    ```
-    mysql -u root -e "CREATE DATABASE IF NOT EXISTS csc370"
-    mysql -u root csc370 < sql/schema.sql
-    for t in region gpu_type ai_model gpu_server machine_metric hosts compatible_with inference_request; do
-        mysql -u root csc370 < sql/data-insertion/$t.sql
-    done
-    mysql -u root csc370 --table < sql/queries.sql
-    ```
+   ```
+   mysql -u root -e "CREATE DATABASE IF NOT EXISTS csc370"
+   mysql -u root csc370 < sql/schema.sql
+   for t in region gpu_type ai_model gpu_server machine_metric hosts compatible_with inference_request; do
+       mysql -u root csc370 < sql/data-insertion/$t.sql
+   done
+   mysql -u root csc370 --table < sql/queries.sql
+   ```
+
+## Populate MySQL directly from CSVs
+
+Install the Python dependencies with `python3 -m pip install -r requirements.txt`.
+After applying `sql/schema.sql`, the direct loader can populate the database
+with Pandas and `mysql-connector-python`:
+
+```bash
+python3 src/benchmark_queries.py --runs 3 --database csc370
+```
+
+The loader reads CSVs from `data/` (or `data/raw/`), uses parameterized
+inserts, and commits all tables in foreign-key order as one transaction.
+Missing values and fields not present in the trace are generated with a
+reproducible random seed (`--seed 370`). Defaults are capped at 500 GPU
+servers, 2,000 metrics, and 1,000 inference requests; adjust those limits
+with `--max-servers`, `--max-metrics`, and `--max-requests`.
+
+## Benchmark queries
+
+Run every SQL file in `sql/queries/` three times and write the elapsed
+wall-clock time for each run to `query_timings.txt`:
+
+```bash
+python3 src/benchmark_queries.py
+```
+
+The benchmark reuses one MySQL connection, measures with Python's
+high-resolution monotonic clock, and fetches all result rows before stopping
+each timer. Times are written in milliseconds. Configure the connection with
+`--host`, `--port`, `--user`, `--password`, and `--database`, or with the
+corresponding `MYSQL_*` environment variables. Use `--runs N` to change the
+number of repetitions and `--output PATH` to choose another output file.
 
 ## How the Data Insertion Files Are Generated
 
@@ -34,10 +67,10 @@ The SQL that inserts data is written by hand. Python only fills in the values.
 
 - **Templates** (`sql/data-insertion/templates/<table>.sql`) are hand-written: one
   `INSERT` statement per table, with a `?` placeholder for each value, e.g.
-    ```sql
-    INSERT INTO AIModel (model_id, model_name)
-    VALUES (?, ?);
-    ```
+  ```sql
+  INSERT INTO AIModel (model_id, model_name)
+  VALUES (?, ?);
+  ```
 - **Population scripts** (`src/data-population/<table>.py`) read the raw CSVs in
   `data/raw/` and produce the values for each row, in the same order as the
   template's placeholders. Shared lookups (sampled jobs, model IDs, regions) live in

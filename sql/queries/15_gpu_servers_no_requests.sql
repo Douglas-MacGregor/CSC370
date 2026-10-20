@@ -1,5 +1,7 @@
 SELECT machine_id
 FROM GPUServer
-EXCEPT
-SELECT machine_id
-FROM InferenceRequest;
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM InferenceRequest
+    WHERE InferenceRequest.machine_id = GPUServer.machine_id
+);

@@ -21,7 +21,8 @@ CREATE TABLE SpecificGPUType(
 
     memory_gb INT,
 
-    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name) ON DELETE CASCADE
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name) ON DELETE CASCADE,
+    CONSTRAINT check_memory_gb CHECK (memory_gb > 0)
 );
 
 CREATE TABLE AIModel(
@@ -40,7 +41,8 @@ CREATE TABLE GPUServer(
     region_id INT NOT NULL,
     gpu_type_name VARCHAR(100) NOT NULL,
     FOREIGN KEY(region_id) REFERENCES Region(region_id),
-    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name),
+    CONSTRAINT check_server_capacity CHECK (cpu_capacity > 0 AND memory_capacity > 0 AND gpu_capacity > 0)
 );
 
 CREATE TABLE InferenceRequest(
@@ -56,7 +58,10 @@ CREATE TABLE InferenceRequest(
     machine_id VARCHAR(100) NOT NULL,
     FOREIGN KEY(region_id) REFERENCES Region(region_id),
     FOREIGN KEY(model_id) REFERENCES AIModel(model_id),
-    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id),
+    CONSTRAINT check_response_time CHECK (response_time_ms >= 0),
+    CONSTRAINT check_input_size CHECK (input_size > 0),
+    CONSTRAINT check_status CHECK (status IN ('Failed', 'Running', 'Terminated'))
 );
 
 -- Weak entity:
@@ -72,7 +77,9 @@ CREATE TABLE MachineMetric(
 
     machine_id VARCHAR(100), -- FK and PK representing the owner relationship
     PRIMARY KEY(machine_id, metric_id),
-    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id) ON DELETE CASCADE
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id) ON DELETE CASCADE,
+    CONSTRAINT check_metric_time CHECK (end_time >= start_time),
+    CONSTRAINT check_metric_nonneg CHECK (worker_load >= 0 AND gpu_utilization >= 0 AND cpu_utilization >= 0)
 );
 
 -- Many-to-many relationship:

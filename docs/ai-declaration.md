@@ -83,11 +83,12 @@ competencies.
   type, resource capacity, utilization, timing data). We reviewed the dataset
   ourselves, decided which parts matched our requirements, and identified what
   was missing and would need to be added or simulated.
+- used to convert fd analysis and projections done by hand into a latex document
 
 ## Why This Does Not Undermine Course Competencies
 
 The competencies being assessed are conceptual and relational schema design,
-normalization to BCNF, and turning a design into working SQL. We did all of
+normalization to BCNF, FD analysis and projection, and turning a design into working SQL. We did all of
 that by hand: the ERD, the normalization, the DDL with its keys and
 constraints, the `INSERT` templates and the queries. Where AI wrote code, it was
 Python that reads data and fills our SQL with values. It made no

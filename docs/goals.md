@@ -88,6 +88,22 @@ Define database constraints using relational algebra notation and implement refe
 - SQL constraints prevent invalid or inconsistent data.
 - Constraints are demonstrated using SQL queries.
 
+### Scope Note
+
+Three cross-table constraints are expressed in relational algebra and checked
+with SQL queries, but they are not enforced in the schema:
+
+- A server only hosts models that are compatible with its GPU type.
+- A request runs on a server that hosts the requested model.
+- Metric windows for the same machine do not overlap.
+
+A `CHECK` constraint only sees one row, so enforcing these needs triggers. That
+was out of scope for this sprint and is planned under
+[Enforce Database Consistency Using Advanced SQL](#goal-enforce-database-consistency-using-advanced-sql).
+The current simulated data violates the first two: 4 `Hosts` rows and 353 of
+400 requests. A unique `(region_name, country)` constraint on `Region` was
+also deferred.
+
 ## Goal: Incorporate Inheritance and Weak Entity Sets into Database Design
 
 ### Objective
@@ -225,5 +241,9 @@ Explore how triggers and SQL's three-valued logic can enforce data consistency a
 ### Acceptance Criteria
 
 - Triggers are implemented to enforce a relevant database consistency rule.
+- The cross-table constraints from Sprint Two (GPU compatibility of hosted
+  models, requests running on a server that hosts their model, non-overlapping
+  metric windows) are enforced, and the data population is fixed so existing
+  data satisfies them.
 - Queries involving NULL values are evaluated using three-valued logic.
 - The effects of NULL values on query predicates and results are demonstrated.

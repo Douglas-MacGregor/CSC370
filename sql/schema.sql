@@ -84,7 +84,7 @@ CREATE TABLE Hosts(
     machine_id VARCHAR(100),
     PRIMARY KEY (model_id, machine_id),
     FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id) ON DELETE CASCADE,
-    FOREIGN KEY(model_id) REFERENCES AIModel(model_id)
+    FOREIGN KEY(model_id) REFERENCES AIModel(model_id) ON DELETE CASCADE
 );
 
 CREATE TABLE CompatibleWith(

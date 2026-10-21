@@ -70,6 +70,9 @@ competencies.
 - Wrote the README section explaining how the insertion files are generated,
   and corrected the setup and load instructions. Claude also tested those
   instructions against a temporary database.
+- For the Sprint 2 constraints goal, Claude checked which rows in the generated
+  data that various insertion statements would deliberately break to demonstrate
+  the constraints functioning correctly.
 
 **ChatGPT (GPT-5.6 Sol):**
 

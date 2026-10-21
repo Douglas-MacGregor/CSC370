@@ -37,8 +37,8 @@ CREATE TABLE GPUServer(
     memory_capacity INT,
     gpu_capacity INT,
 
-    region_id INT,
-    gpu_type_name VARCHAR(100),
+    region_id INT NOT NULL,
+    gpu_type_name VARCHAR(100) NOT NULL,
     FOREIGN KEY(region_id) REFERENCES Region(region_id),
     FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
 );
@@ -51,9 +51,9 @@ CREATE TABLE InferenceRequest(
     status VARCHAR(100),
     response_time_ms DOUBLE,
 
-    region_id INT,
-    model_id INT,
-    machine_id VARCHAR(100),
+    region_id INT NOT NULL,
+    model_id INT NOT NULL,
+    machine_id VARCHAR(100) NOT NULL,
     FOREIGN KEY(region_id) REFERENCES Region(region_id),
     FOREIGN KEY(model_id) REFERENCES AIModel(model_id),
     FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)

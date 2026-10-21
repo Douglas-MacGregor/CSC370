@@ -21,7 +21,7 @@ CREATE TABLE SpecificGPUType(
 
     memory_gb INT,
 
-    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name) ON DELETE CASCADE
 );
 
 CREATE TABLE AIModel(
@@ -72,7 +72,7 @@ CREATE TABLE MachineMetric(
 
     machine_id VARCHAR(100), -- FK and PK representing the owner relationship
     PRIMARY KEY(machine_id, metric_id),
-    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id)
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id) ON DELETE CASCADE
 );
 
 -- Many-to-many relationship:
@@ -83,7 +83,7 @@ CREATE TABLE Hosts(
     model_id INT,
     machine_id VARCHAR(100),
     PRIMARY KEY (model_id, machine_id),
-    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id),
+    FOREIGN KEY(machine_id) REFERENCES GPUServer(machine_id) ON DELETE CASCADE,
     FOREIGN KEY(model_id) REFERENCES AIModel(model_id)
 );
 
@@ -92,6 +92,6 @@ CREATE TABLE CompatibleWith(
     model_id INT,
     gpu_type_name VARCHAR(100),
     PRIMARY KEY(model_id, gpu_type_name),
-    FOREIGN KEY(model_id) REFERENCES AIModel(model_id),
-    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name)
+    FOREIGN KEY(model_id) REFERENCES AIModel(model_id) ON DELETE CASCADE,
+    FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name) ON DELETE CASCADE
 );

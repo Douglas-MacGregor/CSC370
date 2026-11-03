@@ -9,7 +9,7 @@ competencies.
 
 ## What We Did by Hand
 
-**Project design**
+### Project design
 
 - Chose the project topic, defined its scope, and framed it around
   routing inference requests.
@@ -18,7 +18,7 @@ competencies.
 - Identified functional dependencies and normalized the schema to BCNF.
 - Wrote and maintained the sprint goals and acceptance criteria.
 
-**Dataset analysis**
+### Dataset analysis
 
 - Reviewed the Alibaba PAI dataset and decided which parts fit our
   requirements.
@@ -26,7 +26,7 @@ competencies.
   table behind `docs/data-mapping.md`). This included deciding which attributes
   come from real data, which must be simulated, and how.
 
-**SQL**
+### SQL
 
 - Wrote the relational schema and DDL (`sql/schema.sql`): tables, primary
   keys, foreign keys, and composite keys for the many-to-many relationship
@@ -35,8 +35,10 @@ competencies.
   define the `INSERT` statement for each table: the target table, the column
   list and column order, and the placeholder for each value.
 - Wrote the demonstration queries (`sql/queries.sql`).
+- Ran and evaluated the Sprint 3 SQL queries and `EXPLAIN` statements ourselves,
+  including comparing the actual query execution plans produced by MySQL.
 
-**Direction and decisions**
+### Direction and decisions
 
 - Decided how work was split between ourselves and AI. In particular, we chose
   to write all SQL ourselves and limit AI to Python tooling.
@@ -46,7 +48,7 @@ competencies.
 
 ## What AI Did
 
-**Coding assistant (Claude):**
+### Coding assistant (Claude)
 
 - Installed and configured a local MySQL server (via Homebrew) for development
   and testing.
@@ -74,7 +76,7 @@ competencies.
   data that various insertion statements would deliberately break to demonstrate
   the constraints functioning correctly.
 
-**ChatGPT (GPT-5.6 Sol):**
+### ChatGPT (GPT-5.6 Sol)
 
 - Used to review and verify our work, not to design the database. After we
   had derived the tables, keys and relationship tables from our ERD using the
@@ -87,6 +89,13 @@ competencies.
   ourselves, decided which parts matched our requirements, and identified what
   was missing and would need to be added or simulated.
 - used to convert fd analysis and projections done by hand into a latex document
+- For Sprint 3, used to help organize and reword our notes into
+  `docs/sprint3-query-analysis.md`.
+- Helped us understand the use of MySQL `EXPLAIN`, which was required by the
+  Sprint 3 acceptance criteria but was not covered in the lecture slides we
+  reviewed. We ran the queries ourselves and used the actual MySQL output to
+  compare the execution plans. The `EXPLAIN` syntax was also checked against
+  the official MySQL documentation.
 
 ## Why This Does Not Undermine Course Competencies
 
@@ -98,6 +107,11 @@ Python that reads data and fills our SQL with values. It made no
 database-design decisions and wrote no SQL for us. Its other work was setting
 up tools, writing documentation, checking syntax, and reviewing SQL we had
 already written.
+
+For Sprint 3, AI was also used to help organize our notes and explain the use of
+`EXPLAIN`. We still ran the SQL ourselves, examined the actual MySQL output, and
+compared the execution plans ourselves, so it did not replace our understanding
+or application of the course concepts.
 
 Our future goals move even more of the project into SQL. Data transformation
 that the Python currently performs (filtering, joins, deduplication, sampling)

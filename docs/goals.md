@@ -2,6 +2,7 @@
 
 - [Sprint One Goals](#sprint-one-goals)
 - [Sprint Two Goals](#sprint-two-goals)
+- [Sprint Three Goals](#sprint-three-goals)
 - [Future Sprint Goals](#future-sprint-goals)
 
 # Sprint One Goals
@@ -157,55 +158,19 @@ Conduct initial performance experiments on the database to establish a baseline 
 
 ---
 
-# Future Sprint Goals
+# Sprint Three Goals
 
-## Goal: Expand the Database Dataset
-
-### Objective
-
-Explore the process of loading a larger portion of the project dataset into the database.
-
-### Acceptance Criteria
-
-- A larger subset of the dataset is loaded successfully.
-- Data can be queried after loading.
-- Any issues encountered with larger datasets are documented.
-
-## Goal: Further Explore Database Performance
+## Goal: Preform Refactoring
 
 ### Objective
 
-Investigate how database size and query complexity affect system performance.
+Make the project douments easier to find and make the code more accessable
 
 ### Acceptance Criteria
 
-- Performance of selected queries is measured.
-- Performance issues, if any, are identified and documented.
-- Potential improvements are investigated where appropriate.
-
-## Goal: Implement Database Queries
-
-### Objective
-
-Develop queries that demonstrate the functionality and usefulness of the database.
-
-### Acceptance Criteria
-
-- Queries are developed to answer relevant project questions.
-- Queries return correct results.
-- Query performance is evaluated where appropriate.
-
-## Goal: Improve and Refine the Database
-
-### Objective
-
-Review the database design and implementation based on testing and project needs.
-
-### Acceptance Criteria
-
-- Issues or areas for improvement are identified.
-- Appropriate improvements are implemented where feasible.
-- Changes remain consistent with the project requirements.
+- The documents folder has addtional meaningful subfolders
+- The project format has been shifted to a python module with a pyproject.toml
+- Project specific commandline commands have been created and help to streamline main proccess
 
 ## Goal: Develop and Optimize Complex SQL Queries
 
@@ -247,3 +212,111 @@ Explore how triggers and SQL's three-valued logic can enforce data consistency a
   data satisfies them.
 - Queries involving NULL values are evaluated using three-valued logic.
 - The effects of NULL values on query predicates and results are demonstrated.
+
+## Goal: Evaluate Query Performance and Visualize Results
+
+### Objective
+
+Build on the timing experiments from Sprint Two to evaluate the performance of the new complex queries and compare them against the existing baseline queries. Explore the resulting data through visualizations to better understand query performance and identify opportunities for optimization.
+
+### Acceptance Criteria
+
+- The timing experiments from Sprint Two are reused and extended to evaluate the new complex queries.
+- Baseline queries from previous sprints are reviewed and optimized where appropriate.
+- Query execution times are collected and compared between the previous and current sprint.
+- Visualizations are created to explore query performance and highlight differences between query implementations.
+- Performance improvements and trade-offs are documented.
+
+---
+
+# Future Sprint Goals
+
+## Goal: Expand the Database Dataset
+
+### Objective
+
+Explore the process of loading a larger portion of the project dataset into the database.
+
+### Acceptance Criteria
+
+- A larger subset of the dataset is loaded successfully.
+- Data can be queried after loading.
+- Any issues encountered with larger datasets are documented.
+
+## Goal: Further Explore Database Performance
+
+### Objective
+
+Investigate how database size and query complexity affect system performance.
+
+### Acceptance Criteria
+
+- Performance of selected queries is measured.
+- Performance issues, if any, are identified and documented.
+- Potential improvements are investigated where appropriate.
+
+## Goal: Improve and Refine the Database
+
+### Objective
+
+Review the database design and implementation based on testing and project needs.
+
+### Acceptance Criteria
+
+- Issues or areas for improvement are identified.
+- Appropriate improvements are implemented where feasible.
+- Changes remain consistent with the project requirements.
+
+## Goal: Implement Transactions and Enforce Database Consistency
+
+### Objective
+
+Explore database transactions to ensure atomicity and consistency when executing multiple related queries. Investigate transaction isolation and database recovery to understand how DBMSs handle concurrency and failures.
+
+### Acceptance Criteria
+
+- Related SQL operations are grouped into transactions using `START TRANSACTION`, `COMMIT`, and `ROLLBACK`.
+- Transactions are tested to demonstrate atomicity when operations succeed or fail.
+- Check constraints and assertions are explored to enforce database consistency.
+- Transaction isolation levels are evaluated to understand their effects on concurrent operations.
+- Database recovery is demonstrated using transaction log files.
+
+## Goal: Manage Database Access and Permissions
+
+### Objective
+
+Implement database access controls to manage which users can access specific data and what operations they are permitted to perform. Explore views as a mechanism for restricting access to underlying tables.
+
+### Acceptance Criteria
+
+- Database users and roles are created with appropriate privileges.
+- Permissions are granted and revoked using SQL statements.
+- Views are created to expose specific subsets of database information.
+- View privileges are configured to restrict access to underlying data.
+- Insertions and deletions through views are explored.
+
+## Goal: Analyze Disk-Based Index Performance
+
+### Objective
+
+Explore how database indexes improve query performance using the external memory model. Analyze B+-tree operations to understand the cost of accessing and modifying disk-resident data.
+
+### Acceptance Criteria
+
+- The external memory I/O model is used to analyze disk-based query operations.
+- Lookup and range query costs are evaluated using B+-tree indexes.
+- B+-tree insertion operations are analyzed in terms of disk I/O.
+- The effects of indexing on query performance are investigated.
+
+## Goal: Analyze and Optimize SQL Query Execution Plans
+
+### Objective
+
+Investigate how SQL queries are translated into logical and physical execution plans. Explore query optimization techniques to understand how different execution strategies affect performance.
+
+### Acceptance Criteria
+
+- Equivalent logical query plans are identified for SQL queries.
+- Physical execution plans are examined to understand how queries are executed.
+- Selection pushdown through joins is evaluated as a query optimization technique.
+- Alternative query plans are compared to understand their performance trade-offs.

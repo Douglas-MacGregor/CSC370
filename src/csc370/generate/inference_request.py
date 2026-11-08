@@ -1,6 +1,6 @@
 import random
 
-from common import (
+from .common import (
     get_sampled_jobs, get_instances, get_inst_workload,
     get_model_id_of, get_regions, get_gpu_server_ids,
 )

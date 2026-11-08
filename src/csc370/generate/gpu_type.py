@@ -1,4 +1,4 @@
-from common import get_gpu_types, GPU_MEMORY_GB
+from .common import get_gpu_types, GPU_MEMORY_GB
 
 
 def populate(insert):

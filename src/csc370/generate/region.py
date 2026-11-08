@@ -1,4 +1,4 @@
-from common import get_regions
+from .common import get_regions
 
 
 def populate(insert):

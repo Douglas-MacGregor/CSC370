@@ -1,4 +1,4 @@
-from common import get_model_id_of
+from .common import get_model_id_of
 
 
 def populate(insert):

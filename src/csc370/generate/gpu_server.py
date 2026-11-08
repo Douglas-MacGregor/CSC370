@@ -1,12 +1,13 @@
 import random
 
-from etl import read_rows
-from common import get_regions
+from ..etl import read_rows
+from ..paths import RAW_DIR
+from .common import get_regions
 
 
 def populate(insert):
     region_ids = [r[0] for r in get_regions()]
-    for row in read_rows("data/raw/pai_machine_spec.csv"):
+    for row in read_rows(RAW_DIR / "pai_machine_spec.csv"):
         if row["gpu_type"] == "CPU":
             continue
         insert([

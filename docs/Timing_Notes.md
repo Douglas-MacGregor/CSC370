@@ -35,6 +35,39 @@ python3 src/mysql_population/populate.py --database csc370 --user csc370user --p
 Run the script to execute the queries
 
 ```bash
-# Used default seed
-python3 src/benchmark_queries.py --runs 3 --database csc370 --user csc370user --password 'YourPassword123!'
+# Used default seed; run each query 7 times to reduce timing spikes
+python3 src/benchmark_queries.py --runs 7 --database csc370 --user csc370user --password 'YourPassword123!'
 ```
+
+## Query optimizations
+
+The following changes were made after reviewing the queries in
+`sql/queries/`:
+
+- Query 02 now filters with `WHERE ir.status = 'Failed'`, matching its
+  description instead of returning every inference request.
+- Queries 04 and 05 no longer join `GPUType` when no `GPUType` columns are
+  selected. `GPUServer.gpu_type_name` already references that table.
+- Query 19 now joins and groups model/server metrics once, then uses
+  `DISTINCT` to return each qualifying model once instead of running a
+  correlated aggregation for every model.
+- `sql/schema.sql` adds indexes for request status, request machine/region
+  lookups, response-time filtering plus region grouping, and machine metric
+  lookups by machine and GPU utilization.
+
+Recreate the database from `sql/schema.sql` or apply the indexes manually
+before benchmarking the optimized queries. Compare the plans and timings with:
+
+```bash
+mysql -u csc370user -p csc370 < sql/schema.sql
+python3 src/benchmark_queries.py \
+    --runs 7 \
+    --database csc370 \
+    --user csc370user \
+    --password 'YourPassword123!'
+```
+
+Use `EXPLAIN` or `EXPLAIN ANALYZE` on queries 02, 09, 18, and 19 to confirm
+that the optimizer uses the new indexes. The indexes improve possible access
+paths but do not guarantee that MySQL will choose them for every data
+distribution.

@@ -9,8 +9,10 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUTPUT = ROOT / "query_timings.png"
+from .paths import RESULTS_DIR
+
+DEFAULT_CURRENT = RESULTS_DIR / "query_timings.csv"
+DEFAULT_OUTPUT = RESULTS_DIR / "query_timings.png"
 
 
 def read_timings(path: Path) -> dict[str, float]:
@@ -48,16 +50,16 @@ def query_sort_key(name: str) -> tuple[int, str]:
     return (int(match.group(1)) if match else float("inf"), name)
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Plot query benchmark timings.")
-    parser.add_argument("current", type=Path, help="current benchmark CSV")
+def add_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "current", type=Path, nargs="?", default=DEFAULT_CURRENT,
+        help=f"current benchmark CSV (default: {DEFAULT_CURRENT})",
+    )
     parser.add_argument("--baseline", type=Path, help="previous sprint benchmark CSV")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    return parser.parse_args()
 
 
-def main() -> int:
-    args = parse_args()
+def run(args: argparse.Namespace) -> int:
     current = read_timings(args.current)
     baseline = read_timings(args.baseline) if args.baseline else {}
     if baseline:
@@ -119,6 +121,3 @@ def main() -> int:
     print(f"Wrote visualization to {args.output}")
     return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())

@@ -2,18 +2,18 @@
 
 ## Steps to reproduce
 
-set up python virtual env
+Set up a Python virtual env and install the project (adds the `csc370` command)
 
 ```bash
-python3 -m venv myenv
-source myenv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 ```
 
-Set up the database and scheme
+Set up the database and schema
 
 ```bash
-   mysql -u root -e "CREATE DATABASE IF NOT EXISTS csc370"
-   mysql -u root csc370 < sql/schema.sql
+csc370 load --fresh --schema-only
 ```
 
 Set up a user on the database so the script can access it
@@ -29,14 +29,14 @@ TO 'csc370user'@'localhost';
 Fill the database
 
 ```bash
-python3 src/mysql_population/populate.py --database csc370 --user csc370user --password 'YourPassword123!' --max-servers 1000000 --max-metrics 1000000 --max-requests 1000000
+csc370 populate --database csc370 --user csc370user --password 'YourPassword123!' --max-servers 1000000 --max-metrics 1000000 --max-requests 1000000
 ```
 
 Run the script to execute the queries
 
 ```bash
 # Used default seed; run each query 7 times to reduce timing spikes
-python3 src/benchmark_queries.py --runs 7 --database csc370 --user csc370user --password 'YourPassword123!'
+csc370 benchmark --runs 7 --database csc370 --user csc370user --password 'YourPassword123!'
 ```
 
 ## Query optimizations
@@ -59,8 +59,10 @@ Recreate the database from `sql/schema.sql` or apply the indexes manually
 before benchmarking the optimized queries. Compare the plans and timings with:
 
 ```bash
-mysql -u csc370user -p csc370 < sql/schema.sql
-python3 src/benchmark_queries.py \
+csc370 load --fresh --schema-only --user csc370user --password 'YourPassword123!'
+csc370 populate --database csc370 --user csc370user --password 'YourPassword123!' \
+    --max-servers 1000000 --max-metrics 1000000 --max-requests 1000000
+csc370 benchmark \
     --runs 7 \
     --database csc370 \
     --user csc370user \

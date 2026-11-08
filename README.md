@@ -48,7 +48,7 @@ with `--max-servers`, `--max-metrics`, and `--max-requests`.
 ## Benchmark queries
 
 Run every SQL file in `sql/queries/` three times and write the elapsed
-wall-clock time for each run to `query_timings.txt`:
+wall-clock time for each run to the machine-readable `query_timings.csv`:
 
 ```bash
 python3 src/benchmark_queries.py
@@ -56,10 +56,35 @@ python3 src/benchmark_queries.py
 
 The benchmark reuses one MySQL connection, measures with Python's
 high-resolution monotonic clock, and fetches all result rows before stopping
-each timer. Times are written in milliseconds. Configure the connection with
+each timer. Times are written in milliseconds. The query directory includes
+the baseline queries and the newer complex queries (18–20), so one run covers
+both implementations. Configure the connection with
 `--host`, `--port`, `--user`, `--password`, and `--database`, or with the
 corresponding `MYSQL_*` environment variables. Use `--runs N` to change the
-number of repetitions and `--output PATH` to choose another output file.
+number of repetitions or `--output PATH` to choose another CSV output file.
+
+### Visualize query performance
+
+Install the dependencies from `requirements.txt`, run the benchmark, and
+create a bar chart of average query times:
+
+```bash
+python3 -m pip install -r requirements.txt
+python3 src/plot_query_timings.py query_timings.csv --output query_timings.png
+```
+
+To compare a current run with a previous sprint, pass a CSV benchmark as
+`--baseline`:
+
+```bash
+python3 src/plot_query_timings.py query_timings.csv \
+    --baseline previous_query_timings.csv \
+    --output query_timings_comparison.png
+```
+
+The chart uses the same average wall-clock metric for both inputs. Missing
+queries are shown as zero-height bars, making additions such as the complex
+queries visible without changing the historical results.
 
 ## How the Data Insertion Files Are Generated
 

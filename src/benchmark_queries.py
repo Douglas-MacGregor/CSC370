@@ -1,8 +1,9 @@
-"""Run each SQL query repeatedly and record its elapsed time."""
+"""Run each SQL query repeatedly and record its elapsed time as CSV."""
 
 from __future__ import annotations
 
 import argparse
+import csv
 import os
 import time
 from pathlib import Path
@@ -11,7 +12,7 @@ import mysql.connector
 from mysql.connector import Error
 
 DEFAULT_QUERY_DIR = Path(__file__).resolve().parents[1] / "sql" / "queries"
-DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "query_timings.txt"
+DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "query_timings.csv"
 
 
 def parse_args() -> argparse.Namespace:
@@ -28,7 +29,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=DEFAULT_OUTPUT,
-        help=f"timing output file (default: {DEFAULT_OUTPUT})",
+        help=f"CSV timing output file (default: {DEFAULT_OUTPUT})",
     )
     parser.add_argument(
         "--runs",
@@ -80,12 +81,14 @@ def benchmark(
 
 
 def write_results(output: Path, timings: list[tuple[str, list[float]]]) -> None:
+    """Write one CSV row per query execution for analysis and visualization."""
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8") as file:
-        file.write("# Wall-clock query time in milliseconds (one value per run)\n")
+    with output.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(("query", "run", "elapsed_ms"))
         for name, query_times in timings:
-            values = " ".join(f"{elapsed:.3f}" for elapsed in query_times)
-            file.write(f"{name}: {values}\n")
+            for run, elapsed_ms in enumerate(query_times, start=1):
+                writer.writerow((name, run, f"{elapsed_ms:.3f}"))
 
 
 def main() -> int:

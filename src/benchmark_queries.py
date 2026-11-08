@@ -51,7 +51,11 @@ def load_queries(query_dir: Path) -> list[tuple[str, str]]:
 
     queries = []
     for path in sorted(query_dir.glob("*.sql")):
-        sql = path.read_text(encoding="utf-8").strip()
+        sql = "\n".join(
+            line
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if not line.lstrip().startswith("--")
+        ).strip().rstrip(";").strip()
         if sql:
             queries.append((path.stem, sql))
 
@@ -64,17 +68,19 @@ def benchmark(
     queries: list[tuple[str, str]], connection: mysql.connector.MySQLConnection, runs: int
 ) -> list[tuple[str, list[float]]]:
     timings = []
-    # Buffer each result set so the connection is ready for the next query.
-    # This avoids "Commands out of sync" with the C-extension cursor when a
-    # query returns no rows or a large result set.
     cursor = connection.cursor(buffered=True)
     try:
         for name, sql in queries:
             query_times = []
-            for _ in range(runs):
+            for run in range(1, runs + 1):
                 start = time.perf_counter_ns()
-                cursor.execute(sql)
-                cursor.fetchall()
+                try:
+                    cursor.execute(sql)
+                    cursor.fetchall()
+                except Error as error:
+                    raise RuntimeError(
+                        f"Query {name!r} failed on run {run}: {error}"
+                    ) from error
                 elapsed_ms = (time.perf_counter_ns() - start) / 1_000_000
                 query_times.append(elapsed_ms)
             timings.append((name, query_times))
@@ -108,6 +114,7 @@ def main() -> int:
             user=args.user,
             password=args.password,
             database=args.database,
+            use_pure=True,
         )
         timings = benchmark(queries, connection, args.runs)
         write_results(args.output, timings)

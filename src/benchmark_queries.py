@@ -64,7 +64,10 @@ def benchmark(
     queries: list[tuple[str, str]], connection: mysql.connector.MySQLConnection, runs: int
 ) -> list[tuple[str, list[float]]]:
     timings = []
-    cursor = connection.cursor()
+    # Buffer each result set so the connection is ready for the next query.
+    # This avoids "Commands out of sync" with the C-extension cursor when a
+    # query returns no rows or a large result set.
+    cursor = connection.cursor(buffered=True)
     try:
         for name, sql in queries:
             query_times = []

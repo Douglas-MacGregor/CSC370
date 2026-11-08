@@ -40,6 +40,7 @@ GPU_MEMORY_GB = {
 
 STATUS_ALIASES = {
     "completed": "Terminated",
+    "waiting": "Running",
 }
 VALID_STATUSES = {"Failed", "Running", "Terminated"}
 

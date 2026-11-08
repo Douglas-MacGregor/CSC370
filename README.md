@@ -43,7 +43,9 @@ inserts, and commits all tables in foreign-key order as one transaction.
 Missing values and fields not present in the trace are generated with a
 reproducible random seed (`--seed 370`). Defaults are capped at 500 GPU
 servers, 2,000 metrics, and 1,000 inference requests; adjust those limits
-with `--max-servers`, `--max-metrics`, and `--max-requests`.
+with `--max-servers`, `--max-metrics`, and `--max-requests`. Source request
+statuses are normalized to the schema values; for example, `Completed` is
+stored as `Terminated` and `Waiting` is stored as `Running`.
 
 ## Benchmark queries
 

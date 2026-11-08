@@ -38,6 +38,11 @@ GPU_MEMORY_GB = {
     "V100M32": 32,
 }
 
+STATUS_ALIASES = {
+    "completed": "Terminated",
+}
+VALID_STATUSES = {"Failed", "Running", "Terminated"}
+
 
 def _csv(data_dir: Path, name: str) -> pd.DataFrame:
     """Read one trace CSV, accepting either data/ or data/raw/ layouts."""
@@ -63,6 +68,22 @@ def _integer(value: Any, fallback: int, rng: random.Random) -> int:
 
 def _text(value: Any, fallback: str) -> str:
     return fallback if pd.isna(value) or str(value).strip() == "" else str(value)
+
+
+def _status(value: Any, fallback: str) -> str:
+    """Normalize source statuses to the values allowed by the schema."""
+    status = _text(value, fallback).strip()
+    canonical = next(
+        (valid_status for valid_status in VALID_STATUSES
+         if valid_status.lower() == status.lower()),
+        STATUS_ALIASES.get(status.lower()),
+    )
+    if canonical is None:
+        raise ValueError(
+            f"Unsupported inference request status {status!r}; "
+            f"expected one of {sorted(VALID_STATUSES)}"
+        )
+    return canonical
 
 
 def build_rows(
@@ -145,7 +166,7 @@ def build_rows(
         model_name = model_names[(request_id - 1) % len(model_names)]
         machine_id = servers[(request_id - 1) % len(servers)][0]
         submitted = _number(row.start_time, 1_000_000, rng)
-        status = _text(row.status, rng.choice(["Completed", "Failed", "Running"]))
+        status = _status(row.status, rng.choice(sorted(VALID_STATUSES)))
         requests.append(
             (
                 request_id,

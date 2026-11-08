@@ -102,3 +102,16 @@ CREATE TABLE CompatibleWith(
     FOREIGN KEY(model_id) REFERENCES AIModel(model_id) ON DELETE CASCADE,
     FOREIGN KEY(gpu_type_name) REFERENCES GPUType(gpu_type_name) ON DELETE CASCADE
 );
+
+-- Query-supporting indexes used by the benchmark and data-analysis queries.
+CREATE INDEX idx_inference_status
+    ON InferenceRequest(status);
+
+CREATE INDEX idx_inference_machine_region
+    ON InferenceRequest(machine_id, region_id);
+
+CREATE INDEX idx_inference_response_region
+    ON InferenceRequest(response_time_ms, region_id);
+
+CREATE INDEX idx_metric_machine_gpu
+    ON MachineMetric(machine_id, gpu_utilization);

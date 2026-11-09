@@ -8,11 +8,12 @@
 
 import random
 
-from etl import read_rows
+from ..etl import read_rows
+from ..paths import RAW_DIR
 
 random.seed(370)
 
-RAW = "data/raw"
+RAW = RAW_DIR
 
 REGIONS = [
     (1, "us-west", "United States"),

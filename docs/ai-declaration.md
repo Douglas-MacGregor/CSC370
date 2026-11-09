@@ -9,7 +9,7 @@ competencies.
 
 ## What We Did by Hand
 
-**Project design**
+### Project design
 
 - Chose the project topic, defined its scope, and framed it around
   routing inference requests.
@@ -18,15 +18,15 @@ competencies.
 - Identified functional dependencies and normalized the schema to BCNF.
 - Wrote and maintained the sprint goals and acceptance criteria.
 
-**Dataset analysis**
+### Dataset analysis
 
 - Reviewed the Alibaba PAI dataset and decided which parts fit our
   requirements.
 - Produced the field-by-field mapping from the dataset to the ERD (the source
-  table behind `docs/data-mapping.md`). This included deciding which attributes
+  table behind `docs/design/data-mapping.md`). This included deciding which attributes
   come from real data, which must be simulated, and how.
 
-**SQL**
+### SQL
 
 - Wrote the relational schema and DDL (`sql/schema.sql`): tables, primary
   keys, foreign keys, and composite keys for the many-to-many relationship
@@ -35,8 +35,10 @@ competencies.
   define the `INSERT` statement for each table: the target table, the column
   list and column order, and the placeholder for each value.
 - Wrote the demonstration queries (`sql/queries.sql`).
+- Ran and evaluated the Sprint 3 SQL queries and `EXPLAIN` statements ourselves,
+  including comparing the actual query execution plans produced by MySQL.
 
-**Direction and decisions**
+### Direction and decisions
 
 - Decided how work was split between ourselves and AI. In particular, we chose
   to write all SQL ourselves and limit AI to Python tooling.
@@ -46,16 +48,17 @@ competencies.
 
 ## What AI Did
 
-**Coding assistant (Claude):**
+### Coding assistant (Claude)
 
 - Installed and configured a local MySQL server (via Homebrew) for development
   and testing.
 - Moved the raw Kaggle CSVs into `data/raw/` and updated `.gitignore` so the
   multi-GB raw dataset isn't committed.
-- Wrote the Python data-population code (`src/etl.py`, `src/data-population/`)
+- Wrote the Python data-population code (`src/etl.py`, `src/data-population/`, now
+  `src/csc370/etl.py` and `src/csc370/generate/`)
   that follows our dataset mapping. It reads and samples the raw CSVs, joins them
   to derive the `Hosts` and `CompatibleWith` rows, generates the simulated values
-  described in `docs/data-mapping.md`, and fills our hand-written SQL templates
+  described in `docs/design/data-mapping.md`, and fills our hand-written SQL templates
   with those values. Claude chose the sample sizes (400 sampled jobs, at most 5
   metrics per machine).
 - Reviewed our insertion templates against `sql/schema.sql` and the Python
@@ -65,7 +68,7 @@ competencies.
   `INSERT ... SELECT`, looking up foreign keys inside the templates, and adding
   `NOT NULL`/`CHECK` constraints. Claude described these approaches in words
   only and did not write the SQL. We chose which ones to pursue.
-- Drafted `docs/data-mapping.md` from the field-mapping table we had already
+- Drafted `docs/design/data-mapping.md` from the field-mapping table we had already
   produced.
 - Wrote the README section explaining how the insertion files are generated,
   and corrected the setup and load instructions. Claude also tested those
@@ -73,8 +76,14 @@ competencies.
 - For the Sprint 2 constraints goal, Claude checked which rows in the generated
   data that various insertion statements would deliberately break to demonstrate
   the constraints functioning correctly.
+- For the Sprint 3 refactoring goal, Claude carried out the index
+  (`docs/README.md`), turned the Python scripts into the `csc370` package with
+  a `pyproject.toml`, and added the `csc370` command (`generate`, `load`,
+  `populate`, `benchmark`, `plot`, `explain`) plus the matching README updates.
+  `csc370 load` only sends our existing `schema.sql` and insertion files to the
+  `mysql` client. Claude wrote and changed no schema, query or template SQL.
 
-**ChatGPT (GPT-5.6 Sol):**
+### ChatGPT (GPT-5.6 Sol)
 
 - Used to review and verify our work, not to design the database. After we
   had derived the tables, keys and relationship tables from our ERD using the
@@ -87,6 +96,13 @@ competencies.
   ourselves, decided which parts matched our requirements, and identified what
   was missing and would need to be added or simulated.
 - used to convert fd analysis and projections done by hand into a latex document
+- For Sprint 3, used to help organize and reword our notes into
+  `docs/performance/sprint3-query-analysis.md`.
+- Helped us understand the use of MySQL `EXPLAIN`, which was required by the
+  Sprint 3 acceptance criteria but was not covered in the lecture slides we
+  reviewed. We ran the queries ourselves and used the actual MySQL output to
+  compare the execution plans. The `EXPLAIN` syntax was also checked against
+  the official MySQL documentation.
 
 ## Why This Does Not Undermine Course Competencies
 
@@ -98,6 +114,11 @@ Python that reads data and fills our SQL with values. It made no
 database-design decisions and wrote no SQL for us. Its other work was setting
 up tools, writing documentation, checking syntax, and reviewing SQL we had
 already written.
+
+For Sprint 3, AI was also used to help organize our notes and explain the use of
+`EXPLAIN`. We still ran the SQL ourselves, examined the actual MySQL output, and
+compared the execution plans ourselves, so it did not replace our understanding
+or application of the course concepts.
 
 Our future goals move even more of the project into SQL. Data transformation
 that the Python currently performs (filtering, joins, deduplication, sampling)

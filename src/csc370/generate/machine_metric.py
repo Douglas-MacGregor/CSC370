@@ -1,12 +1,13 @@
-from etl import read_rows
-from common import get_gpu_server_ids, MAX_METRICS_PER_MACHINE
+from ..etl import read_rows
+from ..paths import RAW_DIR
+from .common import get_gpu_server_ids, MAX_METRICS_PER_MACHINE
 
 
 def populate(insert):
     server_ids = get_gpu_server_ids()
     counts = {}
     metric_id = 1
-    for row in read_rows("data/raw/pai_machine_metric.csv"):
+    for row in read_rows(RAW_DIR / "pai_machine_metric.csv"):
         machine = row["machine"]
         if machine not in server_ids or counts.get(machine, 0) >= MAX_METRICS_PER_MACHINE:
             continue

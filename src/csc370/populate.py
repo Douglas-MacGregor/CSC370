@@ -9,13 +9,14 @@ already been applied to the target database.
 from __future__ import annotations
 
 import argparse
-import os
 import random
 from pathlib import Path
 from typing import Any
 
-import mysql.connector
 import pandas as pd
+
+from .db import add_mysql_args, connect
+from .paths import DATA_DIR
 
 DEFAULT_SEED = 370
 DEFAULT_MAX_SERVERS = 500
@@ -37,6 +38,12 @@ GPU_MEMORY_GB = {
     "V100": 16,
     "V100M32": 32,
 }
+
+STATUS_ALIASES = {
+    "completed": "Terminated",
+    "waiting": "Running",
+}
+VALID_STATUSES = {"Failed", "Running", "Terminated"}
 
 
 def _csv(data_dir: Path, name: str) -> pd.DataFrame:
@@ -63,6 +70,22 @@ def _integer(value: Any, fallback: int, rng: random.Random) -> int:
 
 def _text(value: Any, fallback: str) -> str:
     return fallback if pd.isna(value) or str(value).strip() == "" else str(value)
+
+
+def _status(value: Any, fallback: str) -> str:
+    """Normalize source statuses to the values allowed by the schema."""
+    status = _text(value, fallback).strip()
+    canonical = next(
+        (valid_status for valid_status in VALID_STATUSES
+         if valid_status.lower() == status.lower()),
+        STATUS_ALIASES.get(status.lower()),
+    )
+    if canonical is None:
+        raise ValueError(
+            f"Unsupported inference request status {status!r}; "
+            f"expected one of {sorted(VALID_STATUSES)}"
+        )
+    return canonical
 
 
 def build_rows(
@@ -145,7 +168,7 @@ def build_rows(
         model_name = model_names[(request_id - 1) % len(model_names)]
         machine_id = servers[(request_id - 1) % len(servers)][0]
         submitted = _number(row.start_time, 1_000_000, rng)
-        status = _text(row.status, rng.choice(["Completed", "Failed", "Running"]))
+        status = _status(row.status, rng.choice(sorted(VALID_STATUSES)))
         requests.append(
             (
                 request_id,
@@ -216,19 +239,16 @@ def insert_rows(connection: Any, rows: dict[str, list[tuple[Any, ...]]]) -> None
         cursor.close()
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
+def add_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--data-dir", type=Path, default=DATA_DIR)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--max-servers", type=int, default=DEFAULT_MAX_SERVERS)
     parser.add_argument("--max-metrics", type=int, default=DEFAULT_MAX_METRICS)
     parser.add_argument("--max-requests", type=int, default=DEFAULT_MAX_REQUESTS)
-    parser.add_argument("--host", default=os.getenv("MYSQL_HOST", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=int(os.getenv("MYSQL_PORT", "3306")))
-    parser.add_argument("--user", default=os.getenv("MYSQL_USER", "root"))
-    parser.add_argument("--password", default=os.getenv("MYSQL_PASSWORD", ""))
-    parser.add_argument("--database", default=os.getenv("MYSQL_DATABASE", "csc370"))
-    args = parser.parse_args()
+    add_mysql_args(parser)
+
+
+def run(args: argparse.Namespace) -> int:
 
     rows = build_rows(
         args.data_dir,
@@ -237,19 +257,10 @@ def main() -> None:
         args.max_metrics,
         args.max_requests,
     )
-    connection = mysql.connector.connect(
-        host=args.host,
-        port=args.port,
-        user=args.user,
-        password=args.password,
-        database=args.database,
-    )
+    connection = connect(args)
     try:
         insert_rows(connection, rows)
     finally:
         connection.close()
     print("Inserted: " + ", ".join(f"{key}={len(value)}" for key, value in rows.items()))
-
-
-if __name__ == "__main__":
-    main()
+    return 0

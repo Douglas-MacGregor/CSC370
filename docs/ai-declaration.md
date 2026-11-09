@@ -23,7 +23,7 @@ competencies.
 - Reviewed the Alibaba PAI dataset and decided which parts fit our
   requirements.
 - Produced the field-by-field mapping from the dataset to the ERD (the source
-  table behind `docs/data-mapping.md`). This included deciding which attributes
+  table behind `docs/design/data-mapping.md`). This included deciding which attributes
   come from real data, which must be simulated, and how.
 
 ### SQL
@@ -54,10 +54,11 @@ competencies.
   and testing.
 - Moved the raw Kaggle CSVs into `data/raw/` and updated `.gitignore` so the
   multi-GB raw dataset isn't committed.
-- Wrote the Python data-population code (`src/etl.py`, `src/data-population/`)
+- Wrote the Python data-population code (`src/etl.py`, `src/data-population/`, now
+  `src/csc370/etl.py` and `src/csc370/generate/`)
   that follows our dataset mapping. It reads and samples the raw CSVs, joins them
   to derive the `Hosts` and `CompatibleWith` rows, generates the simulated values
-  described in `docs/data-mapping.md`, and fills our hand-written SQL templates
+  described in `docs/design/data-mapping.md`, and fills our hand-written SQL templates
   with those values. Claude chose the sample sizes (400 sampled jobs, at most 5
   metrics per machine).
 - Reviewed our insertion templates against `sql/schema.sql` and the Python
@@ -67,7 +68,7 @@ competencies.
   `INSERT ... SELECT`, looking up foreign keys inside the templates, and adding
   `NOT NULL`/`CHECK` constraints. Claude described these approaches in words
   only and did not write the SQL. We chose which ones to pursue.
-- Drafted `docs/data-mapping.md` from the field-mapping table we had already
+- Drafted `docs/design/data-mapping.md` from the field-mapping table we had already
   produced.
 - Wrote the README section explaining how the insertion files are generated,
   and corrected the setup and load instructions. Claude also tested those
@@ -75,6 +76,12 @@ competencies.
 - For the Sprint 2 constraints goal, Claude checked which rows in the generated
   data that various insertion statements would deliberately break to demonstrate
   the constraints functioning correctly.
+- For the Sprint 3 refactoring goal, Claude carried out the index
+  (`docs/README.md`), turned the Python scripts into the `csc370` package with
+  a `pyproject.toml`, and added the `csc370` command (`generate`, `load`,
+  `populate`, `benchmark`, `plot`, `explain`) plus the matching README updates.
+  `csc370 load` only sends our existing `schema.sql` and insertion files to the
+  `mysql` client. Claude wrote and changed no schema, query or template SQL.
 
 ### ChatGPT (GPT-5.6 Sol)
 
@@ -90,7 +97,7 @@ competencies.
   was missing and would need to be added or simulated.
 - used to convert fd analysis and projections done by hand into a latex document
 - For Sprint 3, used to help organize and reword our notes into
-  `docs/sprint3-query-analysis.md`.
+  `docs/performance/sprint3-query-analysis.md`.
 - Helped us understand the use of MySQL `EXPLAIN`, which was required by the
   Sprint 3 acceptance criteria but was not covered in the lecture slides we
   reviewed. We ran the queries ourselves and used the actual MySQL output to

@@ -4,21 +4,20 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 import time
 from pathlib import Path
 
 import mysql.connector
 from mysql.connector import Error
 
-DEFAULT_QUERY_DIR = Path(__file__).resolve().parents[1] / "sql" / "queries"
-DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "query_timings.csv"
+from .db import add_mysql_args, connect
+from .paths import QUERIES_DIR, RESULTS_DIR
+
+DEFAULT_QUERY_DIR = QUERIES_DIR
+DEFAULT_OUTPUT = RESULTS_DIR / "query_timings.csv"
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Benchmark every .sql file in a query directory."
-    )
+def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--query-dir",
         type=Path,
@@ -37,12 +36,7 @@ def parse_args() -> argparse.Namespace:
         default=3,
         help="number of timed executions per query (default: 3)",
     )
-    parser.add_argument("--host", default=os.getenv("MYSQL_HOST", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=int(os.getenv("MYSQL_PORT", "3306")))
-    parser.add_argument("--user", default=os.getenv("MYSQL_USER", "root"))
-    parser.add_argument("--password", default=os.getenv("MYSQL_PASSWORD", ""))
-    parser.add_argument("--database", default=os.getenv("MYSQL_DATABASE", "csc370"))
-    return parser.parse_args()
+    add_mysql_args(parser)
 
 
 def load_queries(query_dir: Path) -> list[tuple[str, str]]:
@@ -100,22 +94,14 @@ def write_results(output: Path, timings: list[tuple[str, list[float]]]) -> None:
                 writer.writerow((name, run, f"{elapsed_ms:.3f}"))
 
 
-def main() -> int:
-    args = parse_args()
+def run(args: argparse.Namespace) -> int:
     if args.runs < 1:
         raise ValueError("--runs must be at least 1")
 
     queries = load_queries(args.query_dir)
     connection = None
     try:
-        connection = mysql.connector.connect(
-            host=args.host,
-            port=args.port,
-            user=args.user,
-            password=args.password,
-            database=args.database,
-            use_pure=True,
-        )
+        connection = connect(args, use_pure=True)
         timings = benchmark(queries, connection, args.runs)
         write_results(args.output, timings)
     except Error as error:
@@ -127,6 +113,3 @@ def main() -> int:
     print(f"Wrote {len(timings)} query timings to {args.output}")
     return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())

@@ -4,16 +4,17 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import mysql.connector
 from mysql.connector import Error
 
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CSV = ROOT / "docs" / "query_plan_explain.csv"
-DEFAULT_PNG = ROOT / "docs" / "query_plan_explain.png"
+from .db import add_mysql_args, connect
+from .paths import RESULTS_DIR
+
+DEFAULT_CSV = RESULTS_DIR / "query_plan_explain.csv"
+DEFAULT_PNG = RESULTS_DIR / "query_plan_explain.png"
 
 SUBQUERY_SQL = """
 SELECT machine_id
@@ -49,10 +50,7 @@ HAVING COUNT(*) >= 5
 """
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Visualize EXPLAIN plan comparisons from the data-analysis SQL files."
-    )
+def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     parser.add_argument("--output", type=Path, default=DEFAULT_PNG)
     parser.add_argument(
@@ -61,12 +59,7 @@ def parse_args() -> argparse.Namespace:
         default=7,
         help="number of EXPLAIN executions per plan variant (default: 7)",
     )
-    parser.add_argument("--host", default=os.getenv("MYSQL_HOST", "127.0.0.1"))
-    parser.add_argument("--port", type=int, default=int(os.getenv("MYSQL_PORT", "3306")))
-    parser.add_argument("--user", default=os.getenv("MYSQL_USER", "root"))
-    parser.add_argument("--password", default=os.getenv("MYSQL_PASSWORD", ""))
-    parser.add_argument("--database", default=os.getenv("MYSQL_DATABASE", "csc370"))
-    return parser.parse_args()
+    add_mysql_args(parser)
 
 
 def explain(
@@ -198,20 +191,12 @@ def plot_plans(path: Path, plans: list[dict[str, object]]) -> None:
     figure.savefig(path, dpi=180)
 
 
-def main() -> int:
-    args = parse_args()
+def run(args: argparse.Namespace) -> int:
     if args.runs < 1:
         raise ValueError("--runs must be at least 1")
     connection = None
     try:
-        connection = mysql.connector.connect(
-            host=args.host,
-            port=args.port,
-            user=args.user,
-            password=args.password,
-            database=args.database,
-            use_pure=True,
-        )
+        connection = connect(args, use_pure=True)
         plans = collect_plans(connection, args.runs)
         write_csv(args.csv, plans)
         plot_plans(args.output, plans)
@@ -225,7 +210,4 @@ def main() -> int:
     print(f"Wrote visualization to {args.output}")
     return 0
 
-
-if __name__ == "__main__":
-    raise SystemExit(main())
 
